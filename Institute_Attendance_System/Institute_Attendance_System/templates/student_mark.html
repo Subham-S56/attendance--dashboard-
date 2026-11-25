@@ -1,0 +1,21 @@
+{% extends 'base.html' %}{% block body %}
+<section class="roster-head"><h2>{{batch_nm}} — Today's attendance</h2><p>Find your own name below and mark Present, Absent or Leave MSG. You may correct it again today.</p><p><a href="{{url_for('student_logout')}}">← Change batch</a></p></section>
+{% set present_students = roster|selectattr('status', 'equalto', 'PRE')|list %}
+{% set absent_students = roster|selectattr('status', 'equalto', 'ABS')|list %}
+<section class="student-batch-summary" aria-label="Batch attendance summary">
+  <div class="student-summary-heading"><div><span class="summary-kicker">LIVE BATCH OVERVIEW</span><h3>Today's batch attendance</h3><p>Attendance totals and student names for {{batch_nm}}</p></div><span class="summary-date">{{today_label or ''}}</span></div>
+  <div class="student-summary-cards">
+    <div class="student-summary-card present"><span class="summary-icon">✓</span><div><small>Total Present</small><strong>{{present_students|length}}</strong></div></div>
+    <div class="student-summary-card absent"><span class="summary-icon">×</span><div><small>Total Absent</small><strong>{{absent_students|length}}</strong></div></div>
+  </div>
+  <div class="student-summary-lists">
+    <div class="student-name-panel present-panel"><div class="student-name-panel-head"><h4>Present students</h4><span>{{present_students|length}}</span></div>
+      {% if present_students %}<ul>{% for student in present_students %}<li><span class="mini-status-dot"></span>{{student.stu_name}} <small>{{student.batch_no}}</small></li>{% endfor %}</ul>{% else %}<p class="empty-status">No students marked present yet.</p>{% endif %}
+    </div>
+    <div class="student-name-panel absent-panel"><div class="student-name-panel-head"><h4>Absent students</h4><span>{{absent_students|length}}</span></div>
+      {% if absent_students %}<ul>{% for student in absent_students %}<li><span class="mini-status-dot"></span>{{student.stu_name}} <small>{{student.batch_no}}</small></li>{% endfor %}</ul>{% else %}<p class="empty-status">No students marked absent yet.</p>{% endif %}
+    </div>
+  </div>
+</section>
+<div class="roster-list">{% for r in roster %}<article class="student-card"><div class="student-avatar">{{r.stu_name[:1]|upper}}</div><div class="student-info"><div><b>Batch No.:</b> {{r.batch_no}}</div><div><b>Name:</b> {{r.stu_name}}</div><div class="status-text">Today's status: <strong>{{r.status or 'Not marked'}}</strong>{% if r.status=='LEAVE MSG' and r.leave_msg %}<small> — {{r.leave_msg}}</small>{% endif %}</div></div><div class="student-action"><form method="post" action="{{url_for('student_mark')}}" class="attendance-choice"><input type="hidden" name="batch_no" value="{{r.batch_no}}"><label class="choice present-choice"><input type="radio" name="status" value="PRE" {% if r.status=='PRE' %}checked{% endif %} required> Present</label><label class="choice absent-choice"><input type="radio" name="status" value="ABS" {% if r.status=='ABS' %}checked{% endif %}> Absent</label><label class="choice leave-choice"><input type="radio" name="status" value="LEAVE MSG" {% if r.status=='LEAVE MSG' %}checked{% endif %}> Leave MSG</label><input name="leave_msg" maxlength="300" value="{{r.leave_msg or ''}}" placeholder="Leave message (if applicable)"><button>Save attendance</button></form></div></article>{% endfor %}</div>
+<p class="hint">Important: this is an open, PIN-free attendance page. Anyone who can access this page can submit attendance for any name in the selected batch. Use it only on a supervised institute network/device.</p>{% endblock %}

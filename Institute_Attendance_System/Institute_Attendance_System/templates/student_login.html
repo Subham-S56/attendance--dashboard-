@@ -1,0 +1,3 @@
+{% extends 'base.html' %}{% block body %}
+<section class="panel"><h2>Student attendance</h2><p>Select your batch to see its complete student list.</p><form method="post"><label>Choose batch<select name="batch_nm" required><option value="">-- Select your batch --</option>{% for b in batches %}<option value="{{b.batch_nm}}">{{b.batch_nm}} ({{b.total}} students)</option>{% endfor %}</select></label><button>Show student list</button></form></section>
+<p class="hint">No student PIN or password is required. Select your own name in the batch list and mark your attendance.</p>{% endblock %}
