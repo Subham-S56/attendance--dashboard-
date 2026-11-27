@@ -1,0 +1,19 @@
+{% extends 'base.html' %}{% block body %}
+<section class="page-heading">
+  <div><span class="eyebrow">DAILY OVERVIEW</span><h2>Today's attendance</h2><p class="subheading">Attendance summary for <strong>{{day}}</strong></p></div>
+  <a class="button button-primary" href="{{url_for('student_login')}}">Mark / correct attendance <span aria-hidden="true">→</span></a>
+</section>
+<div class="metric-grid">
+  <article class="metric-card metric-present"><span class="metric-label">Present today</span><strong>{{present}}</strong><span class="metric-foot">Students marked present</span></article>
+  <article class="metric-card metric-absent"><span class="metric-label">Absent today</span><strong>{{absent}}</strong><span class="metric-foot">Students marked absent</span></article>
+  <article class="metric-card metric-leave"><span class="metric-label">Leave messages</span><strong>{{leave}}</strong><span class="metric-foot">Leave requests submitted</span></article>
+</div>
+<section class="content-section">
+  <div class="section-heading"><div><h3>Student attendance list</h3><p>All batches · Today's latest status</p></div><span class="total-chip">{{rows|length}} students total</span></div>
+  <div class="tablewrap"><table><thead><tr><th>Student name</th><th>Batch</th><th>Batch number</th><th>Today's status</th></tr></thead><tbody>
+  {% for r in rows %}<tr><td class="student-name-cell">{{r.stu_name}}</td><td><span class="batch-tag">{{r.batch_nm}}</span></td><td class="mono-cell">{{r.batch_no}}</td><td>{% if r.status=='PRE' %}<span class="status-pill status-present">Present</span>{% elif r.status=='ABS' %}<span class="status-pill status-absent">Absent</span>{% elif r.status=='LEAVE MSG' %}<span class="status-pill status-leave">Leave MSG</span>{% else %}<span class="status-pill status-pending">—</span>{% endif %}</td></tr>
+  {% else %}<tr><td colspan="4" class="empty-state">No students imported yet. Admin must import the student CSV.</td></tr>{% endfor %}
+  </tbody></table></div>
+</section>
+<p class="privacy-note">Students can select their batch and submit attendance against a name. This PIN-free page should be used on a supervised institute device or trusted institute network.</p>
+{% endblock %}
